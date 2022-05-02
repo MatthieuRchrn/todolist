@@ -96,7 +96,7 @@ class TaskController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy(Task $task)
-{
+    {
     $task->delete();
-}
+    }
 }
