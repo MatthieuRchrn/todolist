@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\Models\Task;
 class TaskController extends Controller
 {
     /**
@@ -13,7 +13,8 @@ class TaskController extends Controller
      */
     public function index()
     {
-        //
+        $tasks = Task::all();
+        return view('tasks.index', compact('tasks'));
     }
 
     /**
@@ -23,7 +24,7 @@ class TaskController extends Controller
      */
     public function create()
     {
-        //
+        return view('tasks.create');
     }
 
     /**
@@ -34,7 +35,15 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'title' => 'required|max:100',
+            'detail' => 'required|max:500',
+        ]);
+        $task = new Task;
+        $task->title = $request->title;
+        $task->detail = $request->detail;
+        $task->save();
+        return back()->with('message', "La tâche a bien été créée !");
     }
 
     /**
@@ -43,10 +52,10 @@ class TaskController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Task $task)
     {
-        //
-    }
+        return view('tasks.show', compact('task'));
+    }   
 
     /**
      * Show the form for editing the specified resource.
@@ -54,9 +63,9 @@ class TaskController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Task $task)
     {
-        //
+        return view('tasks.edit', compact('task'));
     }
 
     /**
@@ -66,19 +75,28 @@ class TaskController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Task $task)
     {
-        //
+        $data = $request->validate([
+            'title' => 'required|max:100',
+            'detail' => 'required|max:500',
+        ]);
+    
+        $task->title = $request->title;
+        $task->detail = $request->detail;
+        $task->state = $request->has('state');
+        $task->save();
+    
+        return back()->with('message', "La tâche a bien été modifiée !");        
     }
-
     /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
-        //
-    }
+    public function destroy(Task $task)
+{
+    $task->delete();
+}
 }
